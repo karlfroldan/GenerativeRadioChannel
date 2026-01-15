@@ -132,7 +132,7 @@ function plot_discrete_heatmap(r::Room, fmap::Matrix{Float32}; title = "Signal C
     plotroom(r; bg=fmap, title=title)
 end
 
-function rasterize(r::Room, grid_size::Tuple{Int, Int}=(100, 100))
+function rasterize(r::Room, grid_size::Tuple{Int, Int}=(128, 128))
     w_grid, h_grid = grid_size
 
     wall_map = zeros(Float32, w_grid, h_grid)
@@ -187,7 +187,7 @@ function rasterize(r::Room, grid_size::Tuple{Int, Int}=(100, 100))
     return cat(wall_map, tx_map, dims=3)
 end
 
-function generate_random_room(; dim=100f0, num_walls=10, num_tx=3)
+function generate_random_room(; dim=128f0, num_walls=10, num_tx=3)
     # Create random walls
     walls = Line{2, Float32}[
         Line(
@@ -199,5 +199,8 @@ function generate_random_room(; dim=100f0, num_walls=10, num_tx=3)
 
     # Random transmitters
     txs = [Point2f(rand() * dim, rand() * dim) for _ in 1:num_tx]
+
+    # txs[1] is the left-most tx.
+    sort!(txs, by = p -> p[1])
     return Room(dim, dim, walls, txs)
 end
